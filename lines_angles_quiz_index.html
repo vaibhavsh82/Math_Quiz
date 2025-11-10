@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Lines, Angles & Geometry Quiz — 30 mins</title>
+  <style>
+    :root{--bg:#f7fafc;--card:#fff;--accent:#0f172a}
+    body{font-family:Inter,system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:#0b1220;margin:0;padding:20px}
+    .container{max-width:900px;margin:16px auto;background:var(--card);padding:20px;border-radius:12px;box-shadow:0 6px 24px rgba(9,30,66,0.08)}
+    header{display:flex;align-items:center;justify-content:space-between;gap:12px}
+    h1{font-size:1.25rem;margin:0}
+    .meta{font-size:0.95rem;color:#334155}
+    .timer{font-weight:700;color:#b91c1c}
+    .question{margin-top:18px;padding:14px;border-radius:8px;border:1px solid #eef2f7}
+    .qtxt{font-weight:600}
+    .options{margin-top:8px;display:flex;flex-direction:column;gap:8px}
+    label{display:flex;align-items:center;gap:10px;padding:8px;border-radius:8px;border:1px solid transparent}
+    input[type="radio"]{transform:scale(1.05)}
+    .actions{display:flex;gap:10px;align-items:center;margin-top:18px}
+    button{background:#0b69ff;color:white;padding:10px 14px;border-radius:8px;border:0;cursor:pointer;font-weight:600}
+    button.secondary{background:#e2e8f0;color:#0b1220}
+    .result{margin-top:16px;padding:12px;border-radius:8px;background:#f1f5f9}
+    .correct{color:green;font-weight:700}
+    .wrong{color:#b91c1c;font-weight:700}
+    .explanation{margin-top:6px;color:#334155;font-size:0.9rem}
+    footer{margin-top:18px;font-size:0.9rem;color:#475569}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div>
+        <h1>Lines, Angles & Geometry Quiz — 30 Questions</h1>
+        <div class="meta">Topics: Lines & Angles • Geometric Constructions • Circles & Triangles • Quadrilaterals</div>
+      </div>
+      <div style="text-align:right">
+        <div class="meta">Time left</div>
+        <div class="timer" id="timer">30:00</div>
+      </div>
+    </header>
+
+    <form id="quizForm" aria-label="Geometry Quiz"></form>
+
+    <div class="actions">
+      <button type="button" id="submitBtn">Submit & Check Answers</button>
+      <button type="button" id="resetBtn" class="secondary">Clear Answers</button>
+      <div style="margin-left:auto;color:#334155">Total: 30 marks</div>
+    </div>
+
+    <div id="result" class="result" style="display:none"></div>
+
+    <footer>Timer auto-submits at 0:00. Review includes reasoning for incorrect answers.</footer>
+  </div>
+
+  <script>
+    const questions = [
+      {q:"Two lines that meet at a point are called:", opts:['Parallel lines','Intersecting lines','Perpendicular lines','Horizontal lines'], ans:'Intersecting lines', exp:'When two lines meet at a point, they are called intersecting lines. Parallel lines never meet.'},
+      {q:"Lines in a plane that never meet are:", opts:['Perpendicular','Parallel','Curved','Transversal'], ans:'Parallel', exp:'Parallel lines are equidistant and never intersect.'},
+      {q:"An angle measuring less than 90° is called:", opts:['Right angle','Obtuse angle','Acute angle','Straight angle'], ans:'Acute angle', exp:'An acute angle measures less than 90°.'},
+      {q:"An angle measuring exactly 90° is:", opts:['Straight angle','Acute angle','Reflex angle','Right angle'], ans:'Right angle', exp:'A right angle measures exactly 90°.'},
+      {q:"An angle of 180° is called:", opts:['Right angle','Straight angle','Obtuse angle','Reflex angle'], ans:'Straight angle', exp:'A straight angle measures 180°, forming a straight line.'},
+      {q:"What instrument is used to measure an angle?", opts:['Ruler','Compass','Protractor','Divider'], ans:'Protractor', exp:'A protractor measures angles in degrees.'},
+      {q:"To draw a line perpendicular to a given line from a point on it, we use:", opts:['Protractor','Compass','Set square','Ruler only'], ans:'Compass', exp:'A compass helps to draw arcs to construct a perpendicular line accurately.'},
+      {q:"Two lines that form a right angle are:", opts:['Parallel','Perpendicular','Transversal','Oblique'], ans:'Perpendicular', exp:'Perpendicular lines intersect to form a 90° angle.'},
+      {q:"If an angle is bisected, it means it is:", opts:['Divided into two equal angles','Cut into two unequal parts','Doubled','Halved incorrectly'], ans:'Divided into two equal angles', exp:'Bisection means dividing something into two equal parts.'},
+      {q:"The sum of angles on a straight line is:", opts:['90°','180°','270°','360°'], ans:'180°', exp:'Angles on a straight line always add up to 180°.'},
+      {q:"A line from the center of a circle to its boundary is called:", opts:['Radius','Diameter','Chord','Tangent'], ans:'Radius', exp:'The radius joins the center and any point on the circle.'},
+      {q:"The distance around a circle is its:", opts:['Area','Diameter','Circumference','Radius'], ans:'Circumference', exp:'The circumference is the perimeter or boundary length of a circle.'},
+      {q:"A triangle with all sides equal is:", opts:['Isosceles','Equilateral','Scalene','Right-angled'], ans:'Equilateral', exp:'Equilateral triangles have all sides and angles equal.'},
+      {q:"A triangle with one right angle is called:", opts:['Acute triangle','Obtuse triangle','Right triangle','Equilateral triangle'], ans:'Right triangle', exp:'A right triangle has one 90° angle.'},
+      {q:"The sum of angles of a triangle is:", opts:['90°','180°','270°','360°'], ans:'180°', exp:'The interior angles of a triangle always sum to 180°.'},
+      {q:"A line segment joining two points on a circle is a:", opts:['Radius','Chord','Tangent','Diameter'], ans:'Chord', exp:'A chord connects two points on a circle.'},
+      {q:"A triangle with all sides unequal is:", opts:['Scalene','Isosceles','Equilateral','Right'], ans:'Scalene', exp:'A scalene triangle has no equal sides or angles.'},
+      {q:"A polygon with four sides is called:", opts:['Triangle','Pentagon','Quadrilateral','Hexagon'], ans:'Quadrilateral', exp:'A quadrilateral is any four-sided polygon.'},
+      {q:"Opposite sides of a parallelogram are:", opts:['Equal and parallel','Unequal','Only equal','None'], ans:'Equal and parallel', exp:'In a parallelogram, opposite sides are both equal and parallel.'},
+      {q:"A rectangle is a special type of:", opts:['Square','Rhombus','Parallelogram','Trapezium'], ans:'Parallelogram', exp:'A rectangle is a parallelogram with all angles 90°.'},
+      {q:"All sides and all angles equal in a quadrilateral defines a:", opts:['Square','Rhombus','Rectangle','Trapezium'], ans:'Square', exp:'A square has all sides and angles equal.'},
+      {q:"The diagonals of a rectangle are:", opts:['Unequal','Perpendicular','Equal','Parallel'], ans:'Equal', exp:'Diagonals of a rectangle are equal in length.'},
+      {q:"A trapezium has:", opts:['Two pairs of parallel sides','One pair of parallel sides','No parallel sides','Four equal sides'], ans:'One pair of parallel sides', exp:'A trapezium has exactly one pair of parallel sides.'},
+      {q:"To draw an angle of 60° using a compass, we construct:", opts:['Equilateral triangle','Isosceles triangle','Right triangle','Scalene triangle'], ans:'Equilateral triangle', exp:'Each angle in an equilateral triangle is 60°, so constructing one gives a 60° angle.'},
+      {q:"Which instrument is used to draw circles?", opts:['Compass','Protractor','Divider','Scale'], ans:'Compass', exp:'A compass is used to draw circles of different radii.'},
+      {q:"A quadrilateral with both pairs of opposite sides parallel is:", opts:['Rectangle','Rhombus','Parallelogram','Square'], ans:'Parallelogram', exp:'A parallelogram has two pairs of parallel sides.'},
+      {q:"A line dividing a figure into two equal halves is called:", opts:['Tangent','Bisector','Median','Chord'], ans:'Bisector', exp:'A bisector divides an angle or line segment into two equal parts.'},
+      {q:"If two lines cross each other, the angles opposite each other are:", opts:['Equal','Unequal','Right','Supplementary'], ans:'Equal', exp:'Vertically opposite angles formed by intersecting lines are equal.'},
+      {q:"The longest side of a right triangle is:", opts:['Base','Height','Hypotenuse','Median'], ans:'Hypotenuse', exp:'In a right triangle, the side opposite the right angle is the hypotenuse, the longest side.'},
+      {q:"The diagonals of a square are:", opts:['Equal and perpendicular','Unequal and perpendicular','Equal and parallel','Unequal and parallel'], ans:'Equal and perpendicular', exp:'A square’s diagonals are equal in length and bisect each other at right angles.'}
+    ];
+
+    const totalTime = 30 * 60;
+    let timeLeft = totalTime;
+    const timerEl = document.getElementById('timer');
+    const form = document.getElementById('quizForm');
+    const resultEl = document.getElementById('result');
+    const submitBtn = document.getElementById('submitBtn');
+    const resetBtn = document.getElementById('resetBtn');
+
+    // Populate quiz
+    questions.forEach((q,i)=>{
+      const div=document.createElement('div');
+      div.className='question';
+      let html=`<div class='qtxt'>${i+1}. ${q.q}</div><div class='options'>`;
+      q.opts.forEach(o=>{html+=`<label><input type='radio' name='q${i}' value='${o}'> ${o}</label>`});
+      html+='</div>';
+      div.innerHTML=html;
+      form.appendChild(div);
+    });
+
+    function formatTime(s){const m=Math.floor(s/60);const sec=s%60;return `${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;}
+
+    timerEl.textContent=formatTime(timeLeft);
+    const timer=setInterval(()=>{timeLeft--;timerEl.textContent=formatTime(timeLeft);if(timeLeft<=0){clearInterval(timer);autoSubmit();}},1000);
+
+    function evaluateQuiz(){
+      let score=0;let details=[];
+      questions.forEach((q,i)=>{
+        const sel=form.querySelector(`input[name='q${i}']:checked`);
+        const user=sel?sel.value:null;
+        const correct=q.ans;
+        if(user===correct)score++;
+        details.push({q:i+1,user,correct,exp:q.exp});
+      });
+      return {score,details};
+    }
+
+    function showResult(res){
+      resultEl.style.display='block';
+      const pct=((res.score/questions.length)*100).toFixed(0);
+      let html=`<div style='font-weight:700'>✅ Quiz Submitted! Score: ${res.score}/${questions.length} (${pct}%)</div><ol style='margin-top:8px'>`;
+      res.details.forEach(d=>{
+        const correctText=d.user===d.correct?'<span class="correct">Correct</span>':'<span class="wrong">Wrong</span>';
+        html+=`<li>Q${d.q}: Your answer: ${d.user||'<em>no answer</em>'} — Correct: ${d.correct} — ${correctText}`;
+        if(d.user!==d.correct){html+=`<div class='explanation'>Why? ${d.exp}</div>`;}
+        html+='</li>';
+      });
+      html+='</ol>';
+      resultEl.innerHTML=html;
+      clearInterval(timer);
+    }
+
+    function autoSubmit(){submitBtn.disabled=true;showResult(evaluateQuiz());}
+    submitBtn.addEventListener('click',()=>{showResult(evaluateQuiz());submitBtn.disabled=true;});
+
+    resetBtn.addEventListener('click',()=>{form.reset();resultEl.style.display='none';submitBtn.disabled=false;timeLeft=totalTime;timerEl.textContent=formatTime(timeLeft);});
+
+    window.addEventListener('beforeunload',(e)=>{e.preventDefault();e.returnValue='';});
+  </script>
+</body>
+</html>
